@@ -22,17 +22,22 @@
     <style>
         body {
             margin-top: 100px;
+            margin-bottom: 100px;
             background-color: honeydew;
         }
         
-        img {
-            border: 1px solid black;
-            display: block;
-            width: 100%;
+        .col {
+            display: inline-block;
         }
         
-        .col-3 {
-            margin-bottom: 20px;
+        #pokedex {
+            width: 18rem;
+            position: fixed;
+            min-height: 650px;
+        }
+        
+        img {
+            width: 140px;
         }
     </style>
     <!--fin estilos-->
@@ -40,14 +45,23 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container md">
 
-        <div id="bulbasaur">
-        </div>
+        <div class="row">
 
-        <div id="pokemones" class="row">
+
+            <div id="pokemones" class="col-8">
+            </div>
+            <div id="pokedex" class="card col-4-md p-5  offset-6 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"></h5>
+                    <p class="card-text"></p>
+                </div>
+            </div>
         </div>
     </div>
+
+
 
 
 
@@ -55,22 +69,39 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
+            //listado con foto
             for (var i = 1; i <= 151; i++) {
-                $('#pokemones').append('<div  class="col-3"><img src="http://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/' + i + '.png"></div>');
-
+                $('#pokemones').append('<div class="col m-1 shadow-sm bg-white rounded"><img id="' + i + '" src="http://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/' + i + '.png"></div>');
             }
 
-            $.get("https://pokeapi.co/api/v2/pokemon/1/", function(res) {
-                var html_str = "";
-                html_str += "<h4>Tipos</h4>";
-                html_str += "<ul>";
-                for (var i = 0; i < res.types.length; i++) {
-                    html_str += "<li>" + res.types[i].type.name + "</li>";
-                }
-                html_str += "</ul>";
-                $("#bulbasaur").html(html_str);
-            });
+            //capturar click
+            $('img').on('click', function() {
+                var id = $(this).attr("id");
+                $.get("https://pokeapi.co/api/v2/pokemon/" + id + '/', function(res) {
 
+                    //lista tipo
+                    var lista = "";
+                    lista += "<ul>";
+                    for (var i = 0; i < res.types.length; i++) {
+                        lista += "<li>" + res.types[i].type.name + "</li>";
+                    }
+                    lista += "</ul>";
+                    $("#info").html(lista);
+
+                    //pokedex
+                    $('#pokedex').html(
+                        "<h1>" + res.name + "</h1>" +
+                        '<div class="col shadow-sm bg-white rounded my-5"><img src="http://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/' + id + '.png"></div>' +
+                        "<h3>Tipos</h3>" + lista +
+                        "<h3>Altura</h3>" +
+                        "<p>" + res.height + "<p>" +
+                        "<h3>Peso</h3>" +
+                        "<p>" + res.weight + "<p>"
+                    );
+                });
+
+
+            });
         });
     </script>
     <!--fin js propio-->
